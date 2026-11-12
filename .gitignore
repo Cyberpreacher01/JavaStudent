@@ -1,0 +1,5 @@
+# Compiled classes
+out/
+
+# Saved course data (generated at runtime, not source)
+*.json

@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Course Management System</title>
+    <link rel="icon" href="data:,">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="topbar">
+    <div>
+        <h1>Student Course Management System</h1>
+        <p class="subtitle">COS201 Programming I &middot; Mid-Semester Lab Project</p>
+    </div>
+    <button id="exitBtn" class="btn btn-danger" title="7. Exit Program">Exit Program</button>
+</header>
+
+<div id="notice" class="notice hidden" role="status"></div>
+
+<main class="layout">
+
+    <!-- Left column: the operations -->
+    <section class="column">
+
+        <div class="card">
+            <h2><span class="step">1</span> <span id="formTitle">Add Course</span></h2>
+            <form id="addForm" novalidate>
+                <label for="code">Course code</label>
+                <input id="code" name="code" type="text" placeholder="e.g. COS201" maxlength="10" autocomplete="off">
+
+                <label for="title">Course title</label>
+                <input id="title" name="title" type="text" placeholder="e.g. Programming I" maxlength="60" autocomplete="off">
+
+                <label for="units">Credit units (1&ndash;6)</label>
+                <input id="units" name="units" type="number" min="1" max="6" placeholder="e.g. 3">
+
+                <div class="button-row">
+                    <button type="submit" id="submitBtn" class="btn btn-primary">Add Course</button>
+                    <button type="button" id="cancelEditBtn" class="btn hidden">Cancel</button>
+                </div>
+            </form>
+        </div>
+
+        <div class="card">
+            <h2><span class="step">3</span> Search Course by Code</h2>
+            <form id="searchForm" class="inline-form" novalidate>
+                <input id="searchCode" type="text" placeholder="e.g. MTH201" maxlength="10" autocomplete="off">
+                <button type="submit" class="btn">Search</button>
+            </form>
+            <div id="searchResult" class="result hidden"></div>
+        </div>
+
+        <div class="card">
+            <h2><span class="step">5</span><span class="step">6</span> Save / Load File</h2>
+            <label for="filename">File name</label>
+            <input id="filename" type="text" value="courses.json" maxlength="54" autocomplete="off">
+            <div class="button-row">
+                <button id="saveBtn" class="btn">Save to File</button>
+                <button id="loadBtn" class="btn">Load from File</button>
+            </div>
+        </div>
+
+    </section>
+
+    <!-- Right column: the course list -->
+    <section class="column wide">
+        <div class="card">
+            <div class="card-header">
+                <h2><span class="step">2</span> All Courses</h2>
+                <button id="refreshBtn" class="btn btn-small">View All Courses</button>
+            </div>
+
+            <table>
+                <thead>
+                    <tr><th>S/N</th><th>Code</th><th>Title</th><th class="num">Units</th><th>Actions</th></tr>
+                </thead>
+                <tbody id="courseTable">
+                    <tr><td colspan="5" class="empty">Loading...</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="card totals">
+            <div class="card-header">
+                <h2><span class="step">4</span> Compute Total Units</h2>
+                <button id="totalBtn" class="btn btn-primary btn-small">Compute Total</button>
+            </div>
+            <div class="stats">
+                <div class="stat"><span id="courseCount">&ndash;</span><small>Courses</small></div>
+                <div class="stat"><span id="totalUnits">&ndash;</span><small>Total units</small></div>
+            </div>
+        </div>
+    </section>
+
+</main>
+
+<div id="stoppedScreen" class="stopped hidden">
+    <div class="card">
+        <h2>Program closed</h2>
+        <p>The server has stopped. To use the system again, run <code>java -cp out CourseServer</code> and reload this page.</p>
+    </div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
