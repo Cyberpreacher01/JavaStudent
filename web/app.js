@@ -52,7 +52,12 @@ function showNotice(message, type) {
 
 /** Fills the table. textContent is used (not innerHTML) so course text
  *  can never be run as code in the page. */
+let lastCourses = [];
+
 function renderCourses(courses, totalUnits, highlightCode) {
+    lastCourses = courses || [];
+    renderLoadBar(highlightCode);
+
     const body = $("courseTable");
     body.innerHTML = "";
 
@@ -102,20 +107,46 @@ function renderCourses(courses, totalUnits, highlightCode) {
     });
 
     const footer = body.insertRow();
+    footer.className = "total-row";
     const label = footer.insertCell();
     label.colSpan = 3;
     label.textContent = "Total (" + courses.length + " course" + (courses.length === 1 ? "" : "s") + ")";
-    label.style.fontWeight = "700";
     const total = footer.insertCell();
     total.textContent = totalUnits;
     total.className = "num";
-    total.style.fontWeight = "700";
     footer.insertCell();   // keeps the footer aligned with the Actions column
+}
+
+/** Draws the semester load bar: one segment per course, sized by its units. */
+function renderLoadBar(highlightCode) {
+    const bar = $("loadBar");
+    bar.innerHTML = "";
+    bar.classList.toggle("is-empty", lastCourses.length === 0);
+    if (lastCourses.length === 0) {
+        bar.textContent = "Your courses will appear here as you add them.";
+        return;
+    }
+    lastCourses.forEach((course, index) => {
+        const segment = document.createElement("span");
+        segment.className = "segment tone-" + (index % 4);
+        if (course.code === highlightCode) segment.classList.add("is-highlighted");
+        segment.style.flexGrow = course.units;
+        segment.dataset.code = course.code;
+        segment.title = course.code + " - " + course.title + " (" + course.units + " units)";
+        const code = document.createElement("strong");
+        code.textContent = course.code;
+        const units = document.createElement("small");
+        units.textContent = course.units + (course.units === 1 ? " unit" : " units");
+        segment.append(code, units);
+        bar.appendChild(segment);
+    });
 }
 
 function updateStats(count, totalUnits) {
     $("courseCount").textContent = count;
     $("totalUnits").textContent = totalUnits;
+    $("courseWord").textContent = Number(count) === 1 ? "course" : "courses";
+    $("unitWord").textContent = Number(totalUnits) === 1 ? "credit unit" : "credit units";
 }
 
 // ---------- Front-end validation (the server checks again) ----------
@@ -248,6 +279,9 @@ function highlightRow(code) {
     document.querySelectorAll("#courseTable tr").forEach((row) => {
         const codeCell = row.cells[1];
         row.classList.toggle("highlight", !!codeCell && codeCell.textContent === code);
+    });
+    document.querySelectorAll("#loadBar .segment").forEach((segment) => {
+        segment.classList.toggle("is-highlighted", segment.dataset.code === code);
     });
 }
 

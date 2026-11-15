@@ -105,6 +105,10 @@ public class ApiHandler implements HttpHandler {
     }
 
     private void editCourse(HttpExchange exchange, String code) throws IOException {
+        if (manager.searchCourse(code) == null) {
+            sendNotFound(exchange, code);
+            return;
+        }
         Map<String, String> form = readForm(exchange);
         Course updated = manager.updateCourse(
                 code,
@@ -117,6 +121,10 @@ public class ApiHandler implements HttpHandler {
     }
 
     private void deleteCourse(HttpExchange exchange, String code) throws IOException {
+        if (manager.searchCourse(code) == null) {
+            sendNotFound(exchange, code);
+            return;
+        }
         Course removed = manager.deleteCourse(code);
         String message = "Course " + removed.getCode() + " - " + removed.getTitle() + " deleted.";
         sendJson(exchange, 200, JsonUtil.response(true, message, listFields()));
@@ -187,7 +195,7 @@ public class ApiHandler implements HttpHandler {
              + ",\"totalUnits\":" + manager.totalUnits();
     }
 
-    /** Only simple names like courses.txt are allowed, so a request cannot
+    /** Only simple names like courses.json are allowed, so a request cannot
      *  read or overwrite files elsewhere on the computer. */
     private String cleanFilename(String filename) {
         if (filename == null || filename.trim().isEmpty()) {
@@ -228,6 +236,11 @@ public class ApiHandler implements HttpHandler {
             values.put(key, value);
         }
         return values;
+    }
+
+    private void sendNotFound(HttpExchange exchange, String code) throws IOException {
+        sendJson(exchange, 404, JsonUtil.response(false,
+                "No course with code '" + code.trim().toUpperCase() + "' was found.", null));
     }
 
     private void sendMethodNotAllowed(HttpExchange exchange) throws IOException {

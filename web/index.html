@@ -5,101 +5,108 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Student Course Management System</title>
     <link rel="icon" href="data:,">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Literata:opsz,wght@7..72,500;7..72,600;7..72,700&family=Public+Sans:wght@400;500;600&display=swap">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<header class="topbar">
-    <div>
-        <h1>Student Course Management System</h1>
-        <p class="subtitle">COS201 Programming I &middot; Mid-Semester Lab Project</p>
+<header class="masthead">
+    <div class="masthead-inner">
+        <div>
+            <h1>Student Course Management System</h1>
+            <p class="subtitle">COS201 Programming I, mid-semester lab project</p>
+        </div>
+        <button id="exitBtn" class="btn btn-exit" type="button">Exit Program</button>
     </div>
-    <button id="exitBtn" class="btn btn-danger" title="7. Exit Program">Exit Program</button>
 </header>
 
-<div id="notice" class="notice hidden" role="status"></div>
+<!-- Semester load: total units and how each course contributes to it -->
+<section class="load" aria-labelledby="loadHeading">
+    <div class="load-inner">
+        <div class="load-figure">
+            <h2 id="loadHeading" class="visually-hidden">Compute Total Units</h2>
+            <p class="figure"><span id="totalUnits">&ndash;</span> <span id="unitWord" class="figure-word">credit units</span></p>
+            <p class="figure-note">across <span id="courseCount">&ndash;</span> <span id="courseWord">courses</span> this semester</p>
+            <button id="totalBtn" class="btn btn-quiet" type="button">Compute Total Units</button>
+        </div>
+        <div id="loadBar" class="load-bar" aria-label="Units per course"></div>
+    </div>
+</section>
+
+<div id="notice" class="notice hidden" role="status" aria-live="polite"></div>
 
 <main class="layout">
 
-    <!-- Left column: the operations -->
-    <section class="column">
+    <!-- Operations panel -->
+    <aside class="panel">
 
-        <div class="card">
-            <h2><span class="step">1</span> <span id="formTitle">Add Course</span></h2>
+        <section class="panel-section">
+            <h2 id="formTitle">Add Course</h2>
             <form id="addForm" novalidate>
                 <label for="code">Course code</label>
-                <input id="code" name="code" type="text" placeholder="e.g. COS201" maxlength="10" autocomplete="off">
+                <input id="code" name="code" type="text" placeholder="COS201" maxlength="10" autocomplete="off">
 
                 <label for="title">Course title</label>
-                <input id="title" name="title" type="text" placeholder="e.g. Programming I" maxlength="60" autocomplete="off">
+                <input id="title" name="title" type="text" placeholder="Programming I" maxlength="60" autocomplete="off">
 
-                <label for="units">Credit units (1&ndash;6)</label>
-                <input id="units" name="units" type="number" min="1" max="6" placeholder="e.g. 3">
+                <label for="units">Credit units <span class="hint">(1&ndash;6)</span></label>
+                <input id="units" name="units" type="number" min="1" max="6" placeholder="3">
 
                 <div class="button-row">
                     <button type="submit" id="submitBtn" class="btn btn-primary">Add Course</button>
                     <button type="button" id="cancelEditBtn" class="btn hidden">Cancel</button>
                 </div>
             </form>
-        </div>
+        </section>
 
-        <div class="card">
-            <h2><span class="step">3</span> Search Course by Code</h2>
+        <section class="panel-section">
+            <h2>Search Course by Code</h2>
             <form id="searchForm" class="inline-form" novalidate>
-                <input id="searchCode" type="text" placeholder="e.g. MTH201" maxlength="10" autocomplete="off">
+                <label for="searchCode" class="visually-hidden">Course code to search for</label>
+                <input id="searchCode" type="text" placeholder="MTH201" maxlength="10" autocomplete="off">
                 <button type="submit" class="btn">Search</button>
             </form>
             <div id="searchResult" class="result hidden"></div>
-        </div>
+        </section>
 
-        <div class="card">
-            <h2><span class="step">5</span><span class="step">6</span> Save / Load File</h2>
+        <section class="panel-section">
+            <h2>Save or Load Your List</h2>
             <label for="filename">File name</label>
             <input id="filename" type="text" value="courses.json" maxlength="54" autocomplete="off">
             <div class="button-row">
-                <button id="saveBtn" class="btn">Save to File</button>
-                <button id="loadBtn" class="btn">Load from File</button>
+                <button id="saveBtn" class="btn" type="button">Save to File</button>
+                <button id="loadBtn" class="btn" type="button">Load from File</button>
             </div>
+        </section>
+
+    </aside>
+
+    <!-- Course register -->
+    <section class="register" aria-labelledby="registerHeading">
+        <div class="register-header">
+            <h2 id="registerHeading">Course Register</h2>
+            <button id="refreshBtn" class="btn btn-quiet" type="button">View All Courses</button>
         </div>
-
-    </section>
-
-    <!-- Right column: the course list -->
-    <section class="column wide">
-        <div class="card">
-            <div class="card-header">
-                <h2><span class="step">2</span> All Courses</h2>
-                <button id="refreshBtn" class="btn btn-small">View All Courses</button>
-            </div>
-
+        <div class="table-wrap">
             <table>
                 <thead>
-                    <tr><th>S/N</th><th>Code</th><th>Title</th><th class="num">Units</th><th>Actions</th></tr>
+                    <tr><th scope="col">S/N</th><th scope="col">Code</th><th scope="col">Title</th><th scope="col" class="num">Units</th><th scope="col"><span class="visually-hidden">Actions</span></th></tr>
                 </thead>
                 <tbody id="courseTable">
-                    <tr><td colspan="5" class="empty">Loading...</td></tr>
+                    <tr><td colspan="5" class="empty">Loading your courses&hellip;</td></tr>
                 </tbody>
             </table>
-        </div>
-
-        <div class="card totals">
-            <div class="card-header">
-                <h2><span class="step">4</span> Compute Total Units</h2>
-                <button id="totalBtn" class="btn btn-primary btn-small">Compute Total</button>
-            </div>
-            <div class="stats">
-                <div class="stat"><span id="courseCount">&ndash;</span><small>Courses</small></div>
-                <div class="stat"><span id="totalUnits">&ndash;</span><small>Total units</small></div>
-            </div>
         </div>
     </section>
 
 </main>
 
 <div id="stoppedScreen" class="stopped hidden">
-    <div class="card">
+    <div class="stopped-box">
         <h2>Program closed</h2>
-        <p>The server has stopped. To use the system again, run <code>java -cp out CourseServer</code> and reload this page.</p>
+        <p>The server has stopped. To use the system again, run <code>java -cp out CourseServer</code> in the terminal and reload this page.</p>
     </div>
 </div>
 

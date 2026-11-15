@@ -44,9 +44,6 @@ public class Course {
         if (title == null || title.trim().isEmpty()) {
             throw new IllegalArgumentException("Course title cannot be empty.");
         }
-        if (title.contains(",")) {
-            throw new IllegalArgumentException("Course title cannot contain commas.");
-        }
         String[] words = title.trim().split("\\s+");
         StringBuilder result = new StringBuilder();
         for (String word : words) {
